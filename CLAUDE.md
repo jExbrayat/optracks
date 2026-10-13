@@ -1,6 +1,12 @@
 # Optracks
 
-Paragliding track analytics tool (Python). Early stage: no code yet.
+Paragliding track analytics tool (Python 3.14, managed with uv). MVP pipeline: IGC → 1 Hz metric fixes → pattern labels + free distance → DuckDB → Streamlit map.
+
+## Commands
+- `source .venv/bin/activate`, then `uv sync` to install
+- `python -m pytest`: tests
+- `optracks ingest data/tracks/*.igc`: process IGC files into `optracks.duckdb` (re-ingesting a file replaces it)
+- `streamlit run src/optracks/app.py`: map of the top N flights
 
 ## Read first
 - `specs.md`: the user's spec. This is the source of truth.
