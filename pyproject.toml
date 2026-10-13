@@ -1,0 +1,23 @@
+[project]
+name = "optracks"
+version = "0.1.0"
+description = "Paragliding track analytics"
+requires-python = ">=3.12"
+dependencies = [
+    "aerofiles>=1.5.6",
+    "duckdb>=1.5.6",
+    "numpy>=2.5.4",
+    "pandas>=3.0.6",
+    "pydeck>=0.9.3",
+    "pyproj>=3.8.0",
+    "streamlit>=1.65.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.13,<0.14"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
