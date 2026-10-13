@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 
 HEADING_SMOOTHING = 5  # s, window used to decide the turning direction
-MIN_TURN_RATE = 6  # deg/s, slower heading changes count as straight flight (igc_lib's default)
 
 THERMAL_TURN = 270  # deg, at least 3/4 of a turn in the same direction
 EIGHT_TURN = 180  # deg, each turn of a figure of eight is at least 1/2 turn
@@ -30,11 +29,7 @@ def turning_runs(x: np.ndarray, y: np.ndarray) -> pd.DataFrame:
     """
     change = heading_change(x, y)
     smoothed = pd.Series(change).rolling(HEADING_SMOOTHING, center=True, min_periods=1).mean()
-    # Direction from the smoothed rate; where it is too slow (e.g. right at a left/right
-    # reversal), fall back to the raw rate so the ends of turns aren't cut off.
-    min_rate = np.radians(MIN_TURN_RATE)
-    rate = np.where(smoothed.abs() >= min_rate, smoothed, np.where(np.abs(change) >= min_rate, change, 0))
-    direction = np.sign(rate).astype(int)
+    direction = np.sign(smoothed.round(9)).astype(int).to_numpy()
     starts = np.r_[0, np.flatnonzero(np.diff(direction)) + 1]
     ends = np.r_[starts[1:], len(direction)]
     angles = [np.degrees(change[s:e].sum()) * direction[s] for s, e in zip(starts, ends)]

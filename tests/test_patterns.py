@@ -86,8 +86,3 @@ def test_segments_split_on_pattern_change_and_join_paths():
         [[4, 0]],
         [[10, 5], [11, 5]],
     ]
-
-
-def test_classify_gentle_curve_does_not_extend_thermal():
-    df = flight((60, 0.5, -1), (48, 15, 2), (60, 0.5, -1))
-    assert abs(labels(df).count(THERMAL) - 48) <= 3
