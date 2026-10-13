@@ -39,9 +39,9 @@ def labels(df):
 
 
 def test_classify_thermal_on_full_turn():
-    df = flight((60, 0, -1), (26, 15, 2), (60, 0, -1))  # 390 deg left turn
+    df = flight((60, 0, -1), (30, 15, 2), (60, 0, -1))  # 450 deg left turn
     out = labels(df)
-    assert out[60:84].count(THERMAL) == 24
+    assert out[62:88].count(THERMAL) == 26
     assert out[:40].count(THERMAL) == 0
 
 
@@ -91,3 +91,8 @@ def test_segments_split_on_pattern_change_and_join_paths():
         [[4, 0]],
         [[10, 5], [11, 5]],
     ]
+
+
+def test_classify_gentle_curve_does_not_extend_thermal():
+    df = flight((60, 0.5, -1), (48, 15, 2), (60, 0.5, -1))
+    assert abs(labels(df).count(THERMAL) - 48) <= 3

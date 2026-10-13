@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 HEADING_SMOOTHING = 5  # s, window used to decide the turning direction
-MIN_TURN_RATE = 12  # deg/s, minimum average turn rate over a thermal's full turn(s)
+MIN_TURN_RATE = 12  # deg/s, slower fixes don't count as turning when looking for thermals
 THERMAL_TURN = 360  # deg, at least a full turn in the same direction
 EIGHT_TURN = 180  # deg, each turn of a figure of eight is at least 1/2 turn
 EIGHT_MAX_GAP = 10  # s, max straight flight between two successive turns of a figure of eight
@@ -21,15 +21,16 @@ def heading_change(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     return np.concatenate([[0.0], change, [0.0]])
 
 
-def turning_runs(x: np.ndarray, y: np.ndarray) -> pd.DataFrame:
+def turning_runs(x: np.ndarray, y: np.ndarray, min_rate: float = 0.0) -> pd.DataFrame:
     """Split the track into runs of constant turning direction.
 
+    Fixes whose smoothed turn rate is below min_rate (deg/s) count as straight.
     Returns one row per run: start, end (fix indices, end exclusive), direction
     (1 left, -1 right, 0 straight) and angle (degrees turned in that direction).
     """
     change = heading_change(x, y)
-    smoothed = pd.Series(change).rolling(HEADING_SMOOTHING, center=True, min_periods=1).mean()
-    direction = np.sign(smoothed.round(9)).astype(int).to_numpy()
+    smoothed = pd.Series(change).rolling(HEADING_SMOOTHING, center=True, min_periods=1).mean().round(9)
+    direction = np.where(smoothed.abs() >= np.radians(min_rate), np.sign(smoothed), 0).astype(int)
     starts = np.r_[0, np.flatnonzero(np.diff(direction)) + 1]
     ends = np.r_[starts[1:], len(direction)]
     angles = [np.degrees(change[s:e].sum()) * direction[s] for s, e in zip(starts, ends)]
@@ -67,12 +68,8 @@ def classify(fixes: pd.DataFrame) -> pd.Series:
         eights[span.start:span.end] = True
     pattern[eights & (climb_rate(fixes["alt"], EIGHT_WINDOW).to_numpy() > EIGHT_VARIO)] = FIGURE_OF_EIGHT
 
-    thermals = (
-        (runs["direction"] != 0)
-        & (runs["angle"] >= THERMAL_TURN)
-        & (runs["angle"] / (runs["end"] - runs["start"]) >= MIN_TURN_RATE)
-    )
-    for run in runs[thermals].itertuples():
+    thermals = turning_runs(fixes["x"].to_numpy(), fixes["y"].to_numpy(), MIN_TURN_RATE)
+    for run in thermals[(thermals["direction"] != 0) & (thermals["angle"] >= THERMAL_TURN)].itertuples():
         pattern[run.start:run.end] = THERMAL
 
     return pd.Series(pattern, index=fixes.index, name="pattern")
