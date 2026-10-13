@@ -71,3 +71,19 @@ def classify(fixes: pd.DataFrame) -> pd.Series:
         pattern[run.start:run.end] = THERMAL
 
     return pd.Series(pattern, index=fixes.index, name="pattern")
+
+
+def segments(fixes: pd.DataFrame) -> pd.DataFrame:
+    """One row per run of same-pattern fixes of a flight: flight_id, pattern, path ([lon, lat] list).
+
+    Each path also ends on the first fix of the next segment so the drawn track has no gaps.
+    """
+    rows = []
+    for flight_id, flight in fixes.groupby("flight_id", sort=False):
+        flight = flight.reset_index(drop=True)
+        runs = (flight["pattern"] != flight["pattern"].shift()).cumsum()
+        for _, run in flight.groupby(runs):
+            end = min(run.index[-1] + 1, len(flight) - 1)
+            path = flight.loc[run.index[0]:end, ["lon", "lat"]].to_numpy().tolist()
+            rows.append({"flight_id": flight_id, "pattern": run["pattern"].iloc[0], "path": path})
+    return pd.DataFrame(rows, columns=["flight_id", "pattern", "path"])

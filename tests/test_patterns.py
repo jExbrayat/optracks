@@ -1,6 +1,7 @@
+import pandas as pd
 from synthetic import flight
 
-from optracks.patterns import FIGURE_OF_EIGHT, RIDGE, THERMAL, TRANSITION, classify, turning_runs
+from optracks.patterns import FIGURE_OF_EIGHT, RIDGE, THERMAL, TRANSITION, classify, segments, turning_runs
 
 
 def runs_of(df, min_angle):
@@ -69,3 +70,19 @@ def test_classify_ridge_and_transition():
     out = labels(flight((300, 0, 0.3), (300, 0, -1)))
     assert set(out[:200]) == {RIDGE}
     assert set(out[400:]) == {TRANSITION}
+
+
+def test_segments_split_on_pattern_change_and_join_paths():
+    fixes = pd.DataFrame({
+        "flight_id": ["a"] * 5 + ["b"] * 2,
+        "lon": [0, 1, 2, 3, 4, 10, 11], "lat": [0, 0, 0, 0, 0, 5, 5],
+        "pattern": [THERMAL, THERMAL, RIDGE, RIDGE, THERMAL, TRANSITION, TRANSITION],
+    })
+    out = segments(fixes)
+    assert out["pattern"].tolist() == [THERMAL, RIDGE, THERMAL, TRANSITION]
+    assert out["path"].tolist() == [
+        [[0, 0], [1, 0], [2, 0]],
+        [[2, 0], [3, 0], [4, 0]],
+        [[4, 0]],
+        [[10, 5], [11, 5]],
+    ]
