@@ -9,7 +9,7 @@ Paragliding track analytics: process raw flight tracks into pattern-based tracks
 ## MVP scope
 - Input: IGC track files provided manually by the user. No connection to XContest or any other data source.
 - Launch site selection: out of scope; the user supplies the tracks for one site.
-- Display the **top N tracks, ranked by distance**, on a map.
+- Display the **top N tracks, ranked by distance**, on a map. Distance = **free distance** as on XContest: start, up to 3 turnpoints, end, all on the track in time order (decided 2026-10-13).
 - Segment each track into patterns (see below) and show them on the map.
 - No advanced filtering, no weather conditioning, no ML.
 
@@ -36,11 +36,12 @@ Dropped for now: "sounding".
 
 ## Stack
 - Python everywhere the user writes code. The user knows Python best.
+- Python 3.14 with uv (`.venv`). Not 3.15: duckdb has no 3.15 wheel yet.
 - Pattern detection runs on the backend as a precompute step, not in the browser. Python in the browser (Pyodide) was rejected.
 - **No Jupyter notebooks.** The user hates them.
 - Use existing libraries where possible:
   - `aerofiles` to parse IGC files
-  - `igc_lib`, whose thermal detection doesn't match the 3/4-turn rule, so either change its threshold or write a small detector that adds up heading change
+  - `igc_lib`: not on PyPI, so we use a small detector that adds up heading change instead
   - `pyproj` for metric coordinates
   - `scikit-learn` DBSCAN for hotspots, later
 - Storage: the user agreed to store processed tracks and asked "Postgres?". Claude recommended **DuckDB**: a single file, no server, a spatial extension, good for aggregate queries. Postgres with PostGIS only if the tool is hosted for many users.
