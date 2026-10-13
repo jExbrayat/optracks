@@ -10,17 +10,15 @@ from optracks.distance import free_distance
 from optracks.igc import read_igc
 from optracks.patterns import classify
 from optracks.store import connect, save_flight
-from optracks.track import prepare
+from optracks.track import project
 
 DEFAULT_DB = Path("optracks.duckdb")
 
 
-def process_igc(path: Path) -> tuple[dict, pd.DataFrame] | None:
-    """Return the flight record and its classified fixes, or None if no flight is found."""
+def process_igc(path: Path) -> tuple[dict, pd.DataFrame]:
+    """Return the flight record and its classified fixes."""
     header, fixes = read_igc(path)
-    fixes = prepare(fixes)
-    if len(fixes) < 2:
-        return None
+    fixes = project(fixes)
     distance, _ = free_distance(fixes)
     flight = {
         "id": hashlib.sha1(path.read_bytes()).hexdigest(),
@@ -42,10 +40,7 @@ def main(argv: list[str] | None = None) -> None:
 
     con = connect(args.db)
     for path in args.files:
-        result = process_igc(path)
-        if result is None:
-            print(f"{path.name}: skipped, no flight found")
-            continue
-        save_flight(con, *result)
-        print(f"{path.name}: {result[0]['distance_km']:.1f} km")
+        flight, fixes = process_igc(path)
+        save_flight(con, flight, fixes)
+        print(f"{path.name}: {flight['distance_km']:.1f} km")
     con.close()

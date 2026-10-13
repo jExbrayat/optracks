@@ -1,6 +1,6 @@
 # Optracks
 
-Paragliding track analytics tool (Python 3.14, managed with uv). MVP pipeline: IGC → 1 Hz metric fixes → pattern labels + free distance → DuckDB → Streamlit map.
+Paragliding track analytics tool (Python 3.14, managed with uv). MVP pipeline: IGC → metric fixes → pattern labels + free distance → DuckDB → Streamlit map.
 
 ## Commands
 - `source .venv/bin/activate`, then `uv sync` to install

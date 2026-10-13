@@ -1,4 +1,4 @@
-"""Pattern detection on prepared 1 Hz fixes (see specs.claude.md for the rules)."""
+"""Pattern detection on fixes (see specs.claude.md for the rules)."""
 
 import numpy as np
 import pandas as pd
@@ -60,7 +60,7 @@ def figure_of_eight_spans(turns: pd.DataFrame) -> pd.DataFrame:
 def classify(fixes: pd.DataFrame) -> pd.Series:
     """Label each fix as thermal, figure_of_eight, ridge or transition.
 
-    Expects 1 Hz fixes with x, y and alt columns. Rules are applied in priority order.
+    Expects fixes with x, y and alt columns. Rules are applied in priority order.
     """
     runs = turning_runs(fixes["x"].to_numpy(), fixes["y"].to_numpy())
     pattern = np.full(len(fixes), TRANSITION, dtype=object)
