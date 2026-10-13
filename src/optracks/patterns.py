@@ -4,9 +4,9 @@ import numpy as np
 import pandas as pd
 
 HEADING_SMOOTHING = 5  # s, window used to decide the turning direction
-MIN_TURN_RATE = 12  # deg/s, slower fixes don't count as turning when looking for thermals
-THERMAL_TURN = 360  # deg, at least a full turn in the same direction
-EIGHT_TURN = 180  # deg, each turn of a figure of eight is at least 1/2 turn
+MIN_TURN_RATE = 10  # deg/s, slower fixes don't count as turning when looking for thermals
+THERMAL_TURN = 270  # deg, at least a full turn in the same direction
+EIGHT_TURN = 140  # deg, each turn of a figure of eight is at least 1/2 turn
 EIGHT_MAX_GAP = 10  # s, max straight flight between two successive turns of a figure of eight
 EIGHT_VARIO, EIGHT_WINDOW = 0.5, 20  # m/s, s
 RIDGE_VARIO, RIDGE_WINDOW = 0.0, 120  # m/s, s
