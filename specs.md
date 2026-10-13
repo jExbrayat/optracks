@@ -25,7 +25,7 @@
 - I agree, we won't average but try to go with transition heatmap and hotspots for thermals, as done in https://thermal.kk7.ch/. But it will be a later feature.
 - Launch site: doesn't matter for now i will provide tracks for mvp.
 - Sounding: forget it now, we'll focus on thermaling and transitions.
-- A thermal is detected when there is at least 3/4 of a turn. Reuse Python library if available.
+- A thermal is detected when there is at least a complete turn. Reuse Python library if available.
 - Figures of eight: let's add a threshold of 0.5 m/s averaged on 20s. For detecting figures of eight, we'll detect thermaling but with a change in the direction after each turn (from left to right, then right to left etc.)
 - Straight ridge soaring is transition but with a 0 m/s threshold integrated over 120 seconds.
 
