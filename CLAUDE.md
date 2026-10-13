@@ -13,3 +13,8 @@ Paragliding track analytics tool (Python). Early stage: no code yet.
 - No ML for now.
 - Prefer existing Python libraries over custom code.
 - Keep answers short and direct.
+
+## Commits
+- Make small commits: one logical change each (e.g. scaffold, one module plus its tests, one doc update).
+- Explicit titles: imperative mood, saying what changed and where, e.g. `Add thermal detection from accumulated heading change`. No vague titles like `update`, `fixes` or `wip`.
+- Run the tests before committing; don't commit a failing state.
