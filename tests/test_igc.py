@@ -1,19 +1,8 @@
 import datetime
 
-from aerofiles.igc import Writer
+from synthetic import write_igc
 
 from optracks.igc import read_igc
-
-
-def write_igc(path, fixes, pressure=True):
-    with open(path, "wb") as f:
-        w = Writer(f)
-        w.write_logger_id("XXX", "ABC", validate=False)
-        w.write_date(datetime.date(2026, 7, 1))
-        w.write_pilot("Test Pilot")
-        for t, lat, lon, alt in fixes:
-            w.write_fix(t, latitude=lat, longitude=lon, valid=True,
-                        pressure_alt=alt if pressure else 0, gps_alt=alt + 20)
 
 
 def test_read_igc(tmp_path):
