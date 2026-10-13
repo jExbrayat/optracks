@@ -1,6 +1,6 @@
 from synthetic import flight
 
-from optracks.patterns import turning_runs
+from optracks.patterns import FIGURE_OF_EIGHT, RIDGE, THERMAL, TRANSITION, classify, turning_runs
 
 
 def runs_of(df, min_angle):
@@ -31,3 +31,41 @@ def test_turning_runs_tolerate_gps_noise():
     runs = runs_of(df, 270)
     assert runs["direction"].tolist() == [-1]
     assert runs["angle"].iloc[0] > 650
+
+
+def labels(df):
+    return classify(df).tolist()
+
+
+def test_classify_thermal_on_three_quarter_turn():
+    df = flight((60, 0, -1), (20, 15, 2), (60, 0, -1))  # 300 deg left turn
+    out = labels(df)
+    assert out[60:78].count(THERMAL) == 18
+    assert out[:40].count(THERMAL) == 0
+
+
+def test_classify_half_turn_alone_is_not_thermal():
+    df = flight((60, 0, -1), (14, 15, 2), (60, 0, -1))  # 210 deg
+    assert THERMAL not in labels(df)
+
+
+def test_classify_figure_of_eight_when_climbing():
+    legs = [(14, 15, 1), (3, 0, 1), (14, -15, 1), (3, 0, 1)] * 3
+    out = labels(flight((60, 0, -1), *legs, (60, 0, -1)))
+    assert out[70:150].count(FIGURE_OF_EIGHT) > 70
+
+
+def test_classify_alternating_turns_without_climb_are_not_figure_of_eight():
+    legs = [(14, 15, 0.2), (3, 0, 0.2), (14, -15, 0.2), (3, 0, 0.2)] * 3
+    assert FIGURE_OF_EIGHT not in labels(flight((60, 0, -1), *legs, (60, 0, -1)))
+
+
+def test_classify_turns_far_apart_are_not_figure_of_eight():
+    legs = [(14, 15, 1), (40, 0, 1), (14, -15, 1), (40, 0, 1)] * 3
+    assert FIGURE_OF_EIGHT not in labels(flight((60, 0, -1), *legs))
+
+
+def test_classify_ridge_and_transition():
+    out = labels(flight((300, 0, 0.3), (300, 0, -1)))
+    assert set(out[:200]) == {RIDGE}
+    assert set(out[400:]) == {TRANSITION}
