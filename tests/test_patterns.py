@@ -38,15 +38,15 @@ def labels(df):
     return classify(df).tolist()
 
 
-def test_classify_thermal_on_three_quarter_turn():
-    df = flight((60, 0, -1), (20, 15, 2), (60, 0, -1))  # 300 deg left turn
+def test_classify_thermal_on_full_turn():
+    df = flight((60, 0, -1), (26, 15, 2), (60, 0, -1))  # 390 deg left turn
     out = labels(df)
-    assert out[60:78].count(THERMAL) == 18
+    assert out[60:84].count(THERMAL) == 24
     assert out[:40].count(THERMAL) == 0
 
 
-def test_classify_half_turn_alone_is_not_thermal():
-    df = flight((60, 0, -1), (14, 15, 2), (60, 0, -1))  # 210 deg
+def test_classify_three_quarter_turn_is_not_thermal():
+    df = flight((60, 0, -1), (20, 15, 2), (60, 0, -1))  # 300 deg
     assert THERMAL not in labels(df)
 
 

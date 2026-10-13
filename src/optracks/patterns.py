@@ -5,7 +5,7 @@ import pandas as pd
 
 HEADING_SMOOTHING = 5  # s, window used to decide the turning direction
 
-THERMAL_TURN = 270  # deg, at least 3/4 of a turn in the same direction
+THERMAL_TURN = 360  # deg, at least a full turn in the same direction
 EIGHT_TURN = 180  # deg, each turn of a figure of eight is at least 1/2 turn
 EIGHT_MAX_GAP = 10  # s, max straight flight between two successive turns of a figure of eight
 EIGHT_VARIO, EIGHT_WINDOW = 0.5, 20  # m/s, s
