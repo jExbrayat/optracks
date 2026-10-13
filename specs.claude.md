@@ -18,7 +18,7 @@ Evaluated in this priority order:
 
 | Pattern | Rule |
 |---|---|
-| Thermal | Heading change of at least **360°** (a full turn) in the same direction (changed from 3/4 turn on 2026-10-13). |
+| Thermal | Heading change of at least **360°** (a full turn) in the same direction (changed from 3/4 turn on 2026-10-13), **and** average turn rate over that turn ≥ **12°/s**. |
 | Figure of eight | Successive turns of **at least 1/2 turn**, with the direction alternating after each turn (L→R→L…), **and** average climb rate over 20 s > 0.5 m/s. |
 | Ridge soaring | Non-circling flight with **average climb rate over 120 s > 0 m/s**. It is its own category, separate from transition. |
 | Transition | Everything else. |

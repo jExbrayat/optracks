@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 HEADING_SMOOTHING = 5  # s, window used to decide the turning direction
-
+MIN_TURN_RATE = 12  # deg/s, minimum average turn rate over a thermal's full turn(s)
 THERMAL_TURN = 360  # deg, at least a full turn in the same direction
 EIGHT_TURN = 180  # deg, each turn of a figure of eight is at least 1/2 turn
 EIGHT_MAX_GAP = 10  # s, max straight flight between two successive turns of a figure of eight
@@ -67,7 +67,12 @@ def classify(fixes: pd.DataFrame) -> pd.Series:
         eights[span.start:span.end] = True
     pattern[eights & (climb_rate(fixes["alt"], EIGHT_WINDOW).to_numpy() > EIGHT_VARIO)] = FIGURE_OF_EIGHT
 
-    for run in runs[(runs["direction"] != 0) & (runs["angle"] >= THERMAL_TURN)].itertuples():
+    thermals = (
+        (runs["direction"] != 0)
+        & (runs["angle"] >= THERMAL_TURN)
+        & (runs["angle"] / (runs["end"] - runs["start"]) >= MIN_TURN_RATE)
+    )
+    for run in runs[thermals].itertuples():
         pattern[run.start:run.end] = THERMAL
 
     return pd.Series(pattern, index=fixes.index, name="pattern")

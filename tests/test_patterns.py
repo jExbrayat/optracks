@@ -45,6 +45,11 @@ def test_classify_thermal_on_full_turn():
     assert out[:40].count(THERMAL) == 0
 
 
+def test_classify_slow_full_turn_is_not_thermal():
+    df = flight((60, 0, -1), (50, 8, 2), (60, 0, -1))  # 400 deg at 8 deg/s
+    assert THERMAL not in labels(df)
+
+
 def test_classify_three_quarter_turn_is_not_thermal():
     df = flight((60, 0, -1), (20, 15, 2), (60, 0, -1))  # 300 deg
     assert THERMAL not in labels(df)
