@@ -12,7 +12,7 @@ def read_igc(path: Path) -> tuple[dict, pd.DataFrame]:
     Altitude is the pressure altitude, or the GPS altitude when the logger has no barometer.
     """
     with open(path, encoding="utf-8", errors="replace") as f:
-        igc = Reader().read(f)
+        igc = Reader(skip_duplicates=True).read(f)
     header = igc["header"][1]
     records = pd.DataFrame(igc["fix_records"][1])
     alt = "pressure_alt" if (records["pressure_alt"] != 0).any() else "gps_alt"
@@ -22,4 +22,4 @@ def read_igc(path: Path) -> tuple[dict, pd.DataFrame]:
         "lon": records["lon"],
         "alt": records[alt].astype(float),
     })
-    return header, fixes.drop_duplicates("time").reset_index(drop=True)
+    return header, fixes.reset_index(drop=True)
