@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from optracks.distance import free_distance
 from optracks.igc import read_igc
 from optracks.patterns import classify
+from optracks.scoring import create_scorer
 from optracks.store import connect, save_flight
 from optracks.track import project
 
@@ -19,13 +19,13 @@ def process_igc(path: Path) -> tuple[dict, pd.DataFrame]:
     """Return the flight record and its classified fixes."""
     header, fixes = read_igc(path)
     fixes = project(fixes)
-    distance, _ = free_distance(fixes)
+    score = create_scorer().free_distance(path)
     flight = {
         "id": hashlib.sha1(path.read_bytes()).hexdigest(),
         "filename": path.name,
         "pilot": header.get("pilot"),
         "date": header.get("utc_date"),
-        "distance_km": distance / 1000,
+        "distance_km": score.distance_m / 1000,
     }
     return flight, fixes.assign(pattern=classify(fixes))
 
