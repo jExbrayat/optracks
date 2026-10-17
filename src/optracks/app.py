@@ -3,6 +3,7 @@
 import pydeck as pdk
 import streamlit as st
 
+from optracks.abstract import abstract
 from optracks.cli import DEFAULT_DB
 from optracks.patterns import FIGURE_OF_EIGHT, RIDGE, THERMAL, TRANSITION, segments
 from optracks.store import connect, flight_fixes, top_flights
@@ -34,10 +35,20 @@ flights = flights.assign(date=flights["date"].astype(str), distance_km=flights["
 paths = segments(fixes).merge(flights, left_on="flight_id", right_on="id")
 paths["color"] = paths["pattern"].map(COLORS)
 
-layer = pdk.Layer("PathLayer", paths, get_path="path", get_color="color", width_min_pixels=2, pickable=True)
+if st.sidebar.checkbox("Abstract tracks"):
+    lines, symbols = abstract(paths)
+    layers = [
+        pdk.Layer("PathLayer", lines, get_path="path", get_color="color", width_min_pixels=3, pickable=True),
+        pdk.Layer(
+            "IconLayer", symbols, get_position=["lon", "lat"], get_icon="icon", get_size=28,
+            size_units="pixels", pickable=True,
+        ),
+    ]
+else:
+    layers = [pdk.Layer("PathLayer", paths, get_path="path", get_color="color", width_min_pixels=2, pickable=True)]
 view = pdk.data_utils.compute_view(fixes[["lon", "lat"]].to_numpy().tolist())
 st.pydeck_chart(pdk.Deck(
-    layers=[layer],
+    layers=layers,
     initial_view_state=view,
     tooltip={"text": "{pilot}, {date}\n{distance_km} km\n{pattern}"},
 ))

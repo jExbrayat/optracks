@@ -22,3 +22,13 @@ def test_app_draws_stored_flights(tmp_path, monkeypatch):
     at = AppTest.from_file(APP).run()
     assert not at.exception
     assert len(at.get("deck_gl_json_chart")) == 1
+
+
+def test_app_abstract_mode(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    write_igc(tmp_path / "f.igc", to_igc_fixes(flight((60, 0, -1), (48, 15, 2), (60, 0, -1))))
+    main(["ingest", "f.igc"])
+    at = AppTest.from_file(APP).run()
+    at.sidebar.checkbox[0].check().run()
+    assert not at.exception
+    assert len(at.get("deck_gl_json_chart")) == 1
