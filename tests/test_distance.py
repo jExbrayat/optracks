@@ -1,7 +1,7 @@
 import pandas as pd
 from synthetic import flight
 
-from optracks.distance import free_distance
+from optracks.scoring.free_distance import free_distance
 
 
 def test_free_distance_straight_line():

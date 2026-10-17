@@ -5,7 +5,7 @@ Pure-Python fallback kept for reference and tests (decimated dynamic programming
 
 from pathlib import Path
 
-from optracks.distance import free_distance
+from optracks.scoring.free_distance import free_distance
 from optracks.igc import read_igc
 from optracks.scoring.base import Score
 from optracks.track import project
