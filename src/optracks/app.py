@@ -2,6 +2,7 @@
 
 import pydeck as pdk
 import streamlit as st
+from pydeck.types import String
 
 from optracks.abstract import abstract
 from optracks.cli import DEFAULT_DB
@@ -14,6 +15,8 @@ COLORS = {
     RIDGE: [40, 160, 70],
     TRANSITION: [40, 110, 220],
 }
+
+THERMAL_DIAMETER_M = 60  # icons have a fixed size on the ground
 
 st.set_page_config(page_title="Optracks", layout="wide")
 n = st.sidebar.number_input("Top N flights by distance", min_value=1, value=10)
@@ -40,7 +43,8 @@ if st.sidebar.checkbox("Abstract tracks"):
     layers = [
         pdk.Layer("PathLayer", lines, get_path="path", get_color="color", width_min_pixels=3, pickable=True),
         pdk.Layer(
-            "IconLayer", symbols, get_position=["lon", "lat"], get_icon="icon", get_size=28, pickable=True,
+            "IconLayer", symbols, get_position=["lon", "lat"], get_icon="icon", get_size=THERMAL_DIAMETER_M,
+            size_units=String("meters"), size_min_pixels=8, pickable=True,
         ),
     ]
 else:
