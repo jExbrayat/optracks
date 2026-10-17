@@ -40,8 +40,7 @@ if st.sidebar.checkbox("Abstract tracks"):
     layers = [
         pdk.Layer("PathLayer", lines, get_path="path", get_color="color", width_min_pixels=3, pickable=True),
         pdk.Layer(
-            "IconLayer", symbols, get_position=["lon", "lat"], get_icon="icon", get_size=28,
-            size_units="pixels", pickable=True,
+            "IconLayer", symbols, get_position=["lon", "lat"], get_icon="icon", get_size=28, pickable=True,
         ),
     ]
 else:
