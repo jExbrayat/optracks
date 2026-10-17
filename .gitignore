@@ -3,4 +3,4 @@ __pycache__/
 *.duckdb
 *.duckdb.wal
 data/
-tracks/
+tracks/node_modules/

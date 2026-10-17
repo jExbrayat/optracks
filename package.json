@@ -1,0 +1,8 @@
+{
+  "name": "optracks-scoring",
+  "private": true,
+  "dependencies": {
+    "igc-parser": "^1.1.0",
+    "igc-xc-score": "^1.8.0"
+  }
+}
