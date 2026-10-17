@@ -3,7 +3,7 @@
 Paragliding track analytics tool (Python 3.14, managed with uv). MVP pipeline: IGC → metric fixes → pattern labels + free distance → DuckDB → Streamlit map.
 
 ## Commands
-- `source .venv/bin/activate`, then `uv sync` to install
+- `source .venv/bin/activate`, then `uv sync` to install, then `python -c "import sys; from nodejs_wheel import npm; sys.exit(npm([\"install\"]))"` for igc-xc-score (Node comes from the `nodejs-wheel-binaries` package)
 - `python -m pytest`: tests
 - `optracks ingest data/tracks/*.igc`: process IGC files into `optracks.duckdb` (re-ingesting a file replaces it)
 - `streamlit run src/optracks/app.py`: map of the top N flights

@@ -1,4 +1,7 @@
-"""Free distance: start, up to 3 turnpoints and end, all on the track in time order (as on XContest)."""
+"""NOTE: the pipeline no longer uses this module; free distance is routed to igc-xc-score (see optracks.scoring).
+Kept as the `builtin` fallback scorer.
+
+Free distance: start, up to 3 turnpoints and end, all on the track in time order (as on XContest)."""
 
 import numpy as np
 import pandas as pd

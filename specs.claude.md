@@ -9,7 +9,7 @@ Paragliding track analytics: process raw flight tracks into pattern-based tracks
 ## MVP scope
 - Input: IGC track files provided manually by the user. No connection to XContest or any other data source.
 - Launch site selection: out of scope; the user supplies the tracks for one site.
-- Display the **top N tracks, ranked by distance**, on a map. Distance = **free distance** as on XContest: start, up to 3 turnpoints, end, all on the track in time order (decided 2026-10-13).
+- Display the **top N tracks, ranked by distance**, on a map. Distance = **free distance** as on XContest: start, up to 3 turnpoints, end, all on the track in time order (decided 2026-10-13). Computed by `igc-xc-score` (Node.js, run as a subprocess) behind the `optracks.scoring` factory (decided 2026-10-17); the pure-Python `distance.py` is kept as a `builtin` fallback, not used by the pipeline.
 - Segment each track into patterns (see below) and show them on the map.
 - No advanced filtering, no weather conditioning, no ML.
 
