@@ -5,3 +5,5 @@ __pycache__/
 data/
 tracks/
 node_modules/
+.claude/
+.agents/
