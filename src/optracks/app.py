@@ -15,8 +15,8 @@ from pydeck.types import String
 
 from optracks.abstract import abstract
 from optracks.cli import DEFAULT_DB, process_igc
-from optracks.patterns import FIGURE_OF_EIGHT, RIDGE, THERMAL, TRANSITION, segments
-from optracks.store import connect, flight_fixes, flights_by_id, save_flight, top_flights
+from optracks.patterns import FIGURE_OF_EIGHT, RIDGE, THERMAL, TRANSITION
+from optracks.store import connect, flight_segments, flights_by_id, save_flight, top_flights
 
 COLORS = {
     THERMAL: [220, 50, 47],
@@ -63,14 +63,14 @@ if not db.exists():
 con = connect(db, read_only=True)
 mine = list(st.session_state.uploaded.values())
 flights = pd.concat([flights_by_id(con, mine), top_flights(con, n)]).drop_duplicates("id")
-fixes = flight_fixes(con, flights["id"].tolist())
+segments = flight_segments(con, flights["id"].tolist())
 con.close()
 if flights.empty:
     st.info("No flights stored yet.")
     st.stop()
 
 flights = flights.assign(date=flights["date"].astype(str), distance_km=flights["distance_km"].round(1))
-paths = segments(fixes).merge(flights, left_on="flight_id", right_on="id")
+paths = segments.merge(flights, left_on="flight_id", right_on="id")
 paths["color"] = paths["pattern"].map(COLORS)
 
 if st.sidebar.checkbox("Abstract tracks"):
@@ -84,7 +84,7 @@ if st.sidebar.checkbox("Abstract tracks"):
     ]
 else:
     layers = [pdk.Layer("PathLayer", paths, get_path="path", get_color="color", width_min_pixels=2, pickable=True)]
-view = pdk.data_utils.compute_view(fixes[["lon", "lat"]].to_numpy().tolist())
+view = pdk.data_utils.compute_view([point for path in paths["path"] for point in path])
 st.pydeck_chart(pdk.Deck(
     layers=layers,
     initial_view_state=view,

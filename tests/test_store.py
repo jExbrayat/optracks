@@ -2,7 +2,7 @@ import datetime
 
 import pandas as pd
 
-from optracks.store import connect, flight_fixes, flights_by_id, save_flight, top_flights
+from optracks.store import connect, flight_fixes, flight_segments, flights_by_id, save_flight, top_flights
 
 
 def make_flight(id, distance_km):
@@ -39,3 +39,21 @@ def test_flights_by_id(tmp_path):
     for id, km in [("a", 10.0), ("b", 30.0)]:
         save_flight(con, *make_flight(id, km))
     assert flights_by_id(con, ["a"])["id"].tolist() == ["a"]
+
+
+def test_segments_are_stored_with_the_flight_and_replaced_with_it(tmp_path):
+    con = connect(tmp_path / "t.duckdb")
+    save_flight(con, *make_flight("a", 10.0))
+    save_flight(con, *make_flight("a", 12.0))
+    stored = flight_segments(con, ["a"])
+    assert stored["pattern"].tolist() == ["transition", "thermal"]
+    assert stored["path"][1] == [[6.1, 45.1], [6.2, 45.2]]
+
+
+def test_connect_backfills_segments_of_older_databases(tmp_path):
+    con = connect(tmp_path / "t.duckdb")
+    save_flight(con, *make_flight("a", 10.0))
+    con.execute("DROP TABLE segments")
+    con.close()
+    con = connect(tmp_path / "t.duckdb")
+    assert flight_segments(con, ["a"])["pattern"].tolist() == ["transition", "thermal"]
