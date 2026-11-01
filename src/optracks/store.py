@@ -50,6 +50,10 @@ def top_flights(con: duckdb.DuckDBPyConnection, n: int) -> pd.DataFrame:
     ).df()
 
 
+def flights_by_id(con: duckdb.DuckDBPyConnection, flight_ids: list[str]) -> pd.DataFrame:
+    return con.execute("SELECT * FROM flights WHERE id IN (SELECT unnest(?))", [flight_ids]).df()
+
+
 def flight_fixes(con: duckdb.DuckDBPyConnection, flight_ids: list[str]) -> pd.DataFrame:
     return con.execute(
         "SELECT * FROM fixes WHERE flight_id IN (SELECT unnest(?)) ORDER BY flight_id, time",
