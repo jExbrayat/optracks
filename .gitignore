@@ -2,6 +2,7 @@
 __pycache__/
 *.duckdb
 *.duckdb.wal
+!demo.duckdb
 tracks/
 data/tracks/
 node_modules/
