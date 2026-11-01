@@ -2,7 +2,7 @@ import datetime
 
 import pandas as pd
 
-from optracks.store import connect, flight_fixes, save_flight, top_flights
+from optracks.store import connect, flight_fixes, flights_by_id, save_flight, top_flights
 
 
 def make_flight(id, distance_km):
@@ -32,3 +32,10 @@ def test_save_flight_replaces_previous_version(tmp_path):
     save_flight(con, *make_flight("a", 12.0))
     assert top_flights(con, 10)["distance_km"].tolist() == [12.0]
     assert len(flight_fixes(con, ["a"])) == 3
+
+
+def test_flights_by_id(tmp_path):
+    con = connect(tmp_path / "t.duckdb")
+    for id, km in [("a", 10.0), ("b", 30.0)]:
+        save_flight(con, *make_flight(id, km))
+    assert flights_by_id(con, ["a"])["id"].tolist() == ["a"]
